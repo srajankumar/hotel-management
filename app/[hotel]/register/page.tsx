@@ -11,9 +11,9 @@ import { useState, useEffect } from "react";
 export default function CustomerRegisterPage({
   params,
 }: {
-  params: Promise<{ hotel: string }>;
+  params: { hotel: string };
 }) {
-  const { hotel } = React.use(params);
+  const hotel = params.hotel;
   const [hotelData, setHotelData] = useState<{
     name: string;
     color_primary: string;

@@ -8,10 +8,12 @@ import Image from "next/image";
 import React from "react";
 import { useState, useEffect } from "react";
 
-export default function CustomerRegisterPage(props: {
-  params: { hotel: string };
+export default function CustomerRegisterPage({
+  params,
+}: {
+  params: Promise<{ hotel: string }>;
 }) {
-  const hotel = props.params.hotel;
+  const { hotel } = React.use(params);
   const [hotelData, setHotelData] = useState<{
     name: string;
     color_primary: string;

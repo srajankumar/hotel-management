@@ -9,7 +9,6 @@ import { toast } from "sonner";
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -61,7 +60,7 @@ export default function AdminLogin() {
           />
           <div className="mt-1 text-sm">
             for trial users, the password is{" "}
-            <span className="text-primary">"password"</span>
+            <span className="text-primary">{`"password"`}</span>
           </div>
           <Input
             required

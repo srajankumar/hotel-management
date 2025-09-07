@@ -1,7 +1,7 @@
 // app/api/developer/handle-request/route.ts
 import { NextResponse } from "next/server";
 import { supabaseServer } from "../../../../lib/supabaseServer";
-import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
 
 type Req = {
   id: string;
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       .select("email, full_name")
       .eq("id", adminId)
       .single();
-    const to = profile?.email;
+    // const to = profile?.email;
 
     // if (to) {
     //   await sendMail({
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
       .select("email, full_name")
       .eq("id", adminId)
       .single();
-    const to = profile?.email;
+    // const to = profile?.email;
     // if (to) {
     //   await sendMail({
     //     to,

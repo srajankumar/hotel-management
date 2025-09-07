@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useEffect, useState } from "react";
 import LogoutButton from "@/components/customer/logout-button";
 import Image from "next/image";
@@ -11,16 +12,17 @@ import { Card } from "@/components/ui/card";
 export default function CabBookingPage({
   params,
 }: {
-  params: { hotel: string };
+  params: Promise<{ hotel: string }>;
 }) {
+  const { hotel } = React.use(params);
+  const hotelSlug = hotel;
+
   const [hotelData, setHotelData] = useState<{
     name: string;
     color_primary: string;
     color_secondary: string;
     logo_url: string;
   } | null>(null);
-
-  const hotelSlug = params.hotel;
 
   const [form, setForm] = useState({
     trip_type: "oneway",

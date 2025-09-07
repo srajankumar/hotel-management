@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   if (fetchErr || !requestRow)
     return NextResponse.json({ error: "request not found" }, { status: 404 });
 
-  const adminId = requestRow.admin_id;
+  // const adminId = requestRow.admin_id;
   const hotelId = requestRow.hotel_id;
 
   if (action === "accept") {

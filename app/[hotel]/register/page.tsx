@@ -1,11 +1,20 @@
 // app/[hotel]/register/page.tsx
 "use client";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export default function CustomerRegisterPage(props: {
   params: { hotel: string };
 }) {
   const { hotel } = require("react").use(props.params);
+  const [hotelData, setHotelData] = useState<{
+    name: string;
+    color_primary: string;
+    color_secondary: string;
+    logo_url: string;
+    services: string[];
+  } | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -17,6 +26,20 @@ export default function CustomerRegisterPage(props: {
     people_names: "",
     selected_services: [] as string[],
   });
+
+  useEffect(() => {
+    // fetch hotel info from Supabase API route
+    fetch(`/api/hotel?slug=${hotel}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Hotel not found");
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setHotelData(data);
+      })
+      .catch((err) => console.error(err));
+  }, [hotel]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -60,77 +83,78 @@ export default function CustomerRegisterPage(props: {
     window.location.href = `/${hotel}`;
   }
 
+  if (!hotelData)
+    return (
+      <div className="max-w-lg mx-auto mt-10 text-center">
+        <p>Loading hotel info…</p>
+      </div>
+    );
+
   return (
-    <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Register at {hotel}</h1>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-        <input
-          name="phone"
-          placeholder="Phone"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-        <input
-          name="dob"
-          type="date"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-        <input
-          name="aadhar_number"
-          placeholder="Aadhar Number"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-        <input
-          name="number_of_people"
-          type="number"
-          placeholder="Number of People"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-        <input
-          name="people_names"
-          placeholder="People Names (comma separated)"
-          onChange={handleChange}
-          className="border p-2 w-full"
-        />
-
-        <div>
-          <label className="font-semibold">Select Services:</label>
-          <div className="flex gap-2 mt-1">
-            {["room", "cab", "food"].map((s) => (
-              <label key={s} className="flex items-center space-x-1">
-                <input
-                  type="checkbox"
-                  checked={form.selected_services.includes(s)}
-                  onChange={() => handleServiceToggle(s)}
-                />
-                <span>{s}</span>
-              </label>
-            ))}
+    <div
+      style={{
+        backgroundColor: hotelData.color_secondary,
+        height: "100dvh",
+      }}
+    >
+      <div className="max-w-3xl mx-auto p-5 text-black">
+        <div className="flex flex-col items-center">
+          <div className="w-96 my-16">
+            <Image
+              src={hotelData.logo_url}
+              alt={hotelData.name}
+              width={500}
+              height={500}
+            />
           </div>
-        </div>
+          <form onSubmit={handleSubmit} className="space-y-3 grid w-full">
+            <Input name="name" placeholder="Name" onChange={handleChange} />
+            <Input name="email" placeholder="Email" onChange={handleChange} />
+            <Input name="phone" placeholder="Phone" onChange={handleChange} />
+            <Input name="dob" type="date" onChange={handleChange} />
+            <Input
+              name="aadhar_number"
+              placeholder="Aadhar Number"
+              onChange={handleChange}
+            />
+            <Input
+              name="number_of_people"
+              type="number"
+              placeholder="Number of People"
+              onChange={handleChange}
+            />
+            <Input
+              name="people_names"
+              placeholder="People Names (comma separated)"
+              onChange={handleChange}
+            />
 
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Register
-        </button>
-      </form>
+            <div>
+              <label className="font-semibold">Select Services:</label>
+              <div className="flex gap-2 mt-1">
+                {["room", "cab", "food"].map((s) => (
+                  <label key={s} className="flex items-center space-x-1">
+                    <Input
+                      type="checkbox"
+                      checked={form.selected_services.includes(s)}
+                      onChange={() => handleServiceToggle(s)}
+                    />
+                    <span>{s}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="px-4 py-2 rounded text-white"
+              style={{ backgroundColor: hotelData.color_primary }}
+            >
+              Register
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 export default function LogoutButton({ hotel }: { hotel: string }) {
   const router = useRouter();
@@ -15,11 +16,8 @@ export default function LogoutButton({ hotel }: { hotel: string }) {
   }
 
   return (
-    <button
-      onClick={handleLogout}
-      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-    >
+    <Button onClick={handleLogout} variant={"destructive"}>
       Logout
-    </button>
+    </Button>
   );
 }

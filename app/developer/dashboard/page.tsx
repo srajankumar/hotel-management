@@ -1,5 +1,9 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 type Req = {
   id: string;
@@ -40,38 +44,44 @@ export default function DeveloperDashboard() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Developer Dashboard</h1>
-      {requests.length === 0 && <p>No subscription requests yet.</p>}
+    <div className="max-w-2xl mx-auto px-5 py-20">
+      <h1 className="text-2xl font-semibold mb-5">Developer Dashboard</h1>
+
+      {requests.length === 0 && (
+        <Card>
+          <CardContent>
+            <Label>No subscription requests yet.</Label>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="space-y-3">
         {requests.map((r) => (
-          <div key={r.id} className="p-3 border rounded">
-            <div>
-              <strong>Services:</strong> {r.requested_services?.join(", ")}
-            </div>
-            <div>
-              <strong>Price:</strong> ₹{r.price_monthly}
-            </div>
-            <div>
-              <strong>Status:</strong> {r.status}
-            </div>
-            {r.status === "pending" && (
-              <div className="mt-2 flex gap-2">
-                <button
-                  onClick={() => handleAction(r.id, "accept")}
-                  className="px-3 py-1 bg-green-600 text-white"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleAction(r.id, "reject")}
-                  className="px-3 py-1 bg-red-600 text-white"
-                >
-                  Reject
-                </button>
+          <Card key={r.id} className="p-3 border rounded">
+            <CardContent className="p-3">
+              <div className="grid gap-3">
+                <Label>Services: {r.requested_services?.join(", ")}</Label>
+                <Label>Price: ₹{r.price_monthly}</Label>
+                <Label>Status: {r.status}</Label>
+                {r.status === "pending" && (
+                  <div className="mt-2 flex gap-2">
+                    <Button
+                      onClick={() => handleAction(r.id, "accept")}
+                      variant={"success"}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      onClick={() => handleAction(r.id, "reject")}
+                      variant={"destructive"}
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>

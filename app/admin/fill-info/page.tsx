@@ -1,8 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { supabase } from "../../../lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import slugify from "slugify";
-import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const SERVICES = [
   { id: "rooms", name: "Room booking", price: 2000 },
@@ -16,7 +20,7 @@ export default function FillInfo() {
   const [secondary, setSecondary] = useState("#000000");
   const [logo, setLogo] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   function toggle(id: string) {
     setSelected((prev) =>
@@ -32,96 +36,142 @@ export default function FillInfo() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
+
     const { data: userRes } = await supabase.auth.getUser();
-    if (!userRes.user) return alert("login first");
 
-    const adminId = userRes.user.id;
-    const slug = slugify(name, { lower: true, strict: true });
+    if (!userRes.user) {
+      setLoading(false);
+      toast.error("login first");
+    } else {
+      const adminId = userRes.user.id;
+      const slug = slugify(name, { lower: true, strict: true });
 
-    const { data: hotelData, error: hErr } = await supabase
-      .from("hotels")
-      .insert([
-        {
-          admin_id: adminId,
-          name,
-          slug,
-          color_primary: primary,
-          color_secondary: secondary,
-          logo_url: logo,
-          services: selected,
-        },
-      ])
-      .select()
-      .single();
-    if (hErr) return alert("hotel create error " + hErr.message);
+      const { data: hotelData, error: hErr } = await supabase
+        .from("hotels")
+        .insert([
+          {
+            admin_id: adminId,
+            name,
+            slug,
+            color_primary: primary,
+            color_secondary: secondary,
+            logo_url: logo,
+            services: selected,
+          },
+        ])
+        .select()
+        .single();
+      if (hErr) {
+        setLoading(false);
+        toast.error("Something went wrong, please try again.");
+        console.log("hotel create error: " + hErr.message);
+      }
 
-    const price = calc();
-    const { error: rErr } = await supabase
-      .from("subscription_requests")
-      .insert([
-        {
-          admin_id: adminId,
-          hotel_id: hotelData.id,
-          requested_services: selected,
-          price_monthly: price,
-          status: "pending",
-        },
-      ]);
-    if (rErr) return alert("request err " + rErr.message);
+      const price = calc();
+      const { error: rErr } = await supabase
+        .from("subscription_requests")
+        .insert([
+          {
+            admin_id: adminId,
+            hotel_id: hotelData.id,
+            requested_services: selected,
+            price_monthly: price,
+            status: "pending",
+          },
+        ]);
+      if (rErr) {
+        setLoading(false);
+        toast.error("Something went wrong, please try again.");
+        console.log("request create error: " + rErr.message);
+      }
 
-    alert("Request submitted. Developer will review.");
-    // you can route to a waiting page or the slug-based admin route
-    router.push("/");
+      setLoading(false);
+      toast.success("Request submitted. Developer will review.");
+
+      setName("");
+      setPrimary("#ffffff");
+      setSecondary("#000000");
+      setLogo("");
+      setSelected([]);
+    }
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Setup your hotel</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Hotel name"
-          className="w-full p-2 border"
-        />
-        <div className="flex gap-2 items-center">
-          <input
-            type="color"
-            value={primary}
-            onChange={(e) => setPrimary(e.target.value)}
+    <div className="flex min-h-dvh items-center justify-center p-5">
+      <div className="md:max-w-2xl w-full">
+        <h1 className="text-2xl font-semibold mb-4">Setup your hotel</h1>
+        <form onSubmit={handleSubmit} className="grid gap-4">
+          <Input
+            disabled={loading}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="hotel name"
           />
-          <input
-            type="color"
-            value={secondary}
-            onChange={(e) => setSecondary(e.target.value)}
-          />
-          <input
+          <div className="flex gap-2 items-center">
+            <Label>Theme colors</Label>
+            <Input
+              className="w-9 p-1"
+              type="color"
+              value={primary}
+              onChange={(e) => setPrimary(e.target.value)}
+              disabled={loading}
+            />
+            <Input
+              className="w-9 p-1"
+              type="color"
+              value={secondary}
+              onChange={(e) => setSecondary(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+          <Input
             value={logo}
             onChange={(e) => setLogo(e.target.value)}
-            placeholder="Logo URL"
-            className="flex-1 p-2 border"
+            placeholder="logo URL"
+            disabled={loading}
           />
-        </div>
-        <div>
-          <p className="font-semibold">Services</p>
-          {SERVICES.map((s) => (
-            <label key={s.id} className="block">
-              <input
-                type="checkbox"
-                checked={selected.includes(s.id)}
-                onChange={() => toggle(s.id)}
-              />
-              <span className="ml-2">
-                {s.name} — ₹{s.price}/mo
-              </span>
-            </label>
-          ))}
-        </div>
-        <div>
-          <strong>Estimated monthly:</strong> ₹{calc()}
-        </div>
-        <button className="px-4 py-2 bg-blue-600 text-white">Submit</button>
-      </form>
+          <div className="space-y-2">
+            <Label className="font-semibold">Services</Label>
+            <div className="flex flex-col gap-3">
+              {SERVICES.map((s) => (
+                <div key={s.id} className="flex items-center gap-3">
+                  <Checkbox
+                    checked={selected.includes(s.id)}
+                    onCheckedChange={() => toggle(s.id)}
+                    disabled={loading}
+                  />
+                  <Label>
+                    {s.name} — ₹{s.price}/mo
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Label>
+            Estimated monthly: <span className="text-primary">₹{calc()}</span>
+          </Label>
+          <Button disabled={loading}>
+            {loading && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-2 h-4 w-4 animate-spin"
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+            )}
+            Submit
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

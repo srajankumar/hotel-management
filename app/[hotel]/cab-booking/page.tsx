@@ -1,16 +1,42 @@
 "use client";
-import LogoutButton from "@/components/customer/logout-button";
-import { useState } from "react";
 
-export default function CabBookingPage(props: { params: { hotel: string } }) {
-  const { hotel } = require("react").use(props.params);
+import { useEffect, useState } from "react";
+import LogoutButton from "@/components/customer/logout-button";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+export default function CabBookingPage({
+  params,
+}: {
+  params: { hotel: string };
+}) {
+  const [hotelData, setHotelData] = useState<{
+    name: string;
+    color_primary: string;
+    color_secondary: string;
+    logo_url: string;
+  } | null>(null);
+
+  const hotelSlug = params.hotel;
+
   const [form, setForm] = useState({
     trip_type: "oneway",
     from_location: "",
     to_location: "",
     vehicle_type: "",
-    travel_datetime: "", // changed field name for clarity
+    travel_datetime: "",
   });
+
+  useEffect(() => {
+    // fetch hotel theme
+    fetch(`/api/hotel?slug=${hotelSlug}`)
+      .then((res) => res.json())
+      .then((data) => setHotelData(data))
+      .catch(() => setHotelData(null));
+  }, [hotelSlug]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -27,7 +53,7 @@ export default function CabBookingPage(props: { params: { hotel: string } }) {
       return;
     }
 
-    const res = await fetch(`/api/cabs?hotel=${hotel}`, {
+    const res = await fetch(`/api/cabs?hotel=${hotelSlug}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, customer_id }),
@@ -42,66 +68,130 @@ export default function CabBookingPage(props: { params: { hotel: string } }) {
     }
   }
 
+  if (!hotelData) {
+    return (
+      <div className="text-center mt-10">
+        <p>Loading hotel info…</p>
+      </div>
+    );
+  }
+
+  const primary = hotelData.color_primary || "#FACC15"; // fallback yellow
+  const secondary = hotelData.color_secondary || "#FFFFFF";
+
   return (
-    <div className="max-w-lg mx-auto">
-      <nav>
-        <LogoutButton hotel={hotel} />
+    <div
+      className="min-h-dvh flex flex-col items-center"
+      style={{ backgroundColor: secondary }}
+    >
+      <nav className="w-full p-5 flex justify-between absolute top-0">
+        <Link href={`/${hotelSlug}`}>
+          <Button variant={"outline"}>Go Back</Button>
+        </Link>
+        <LogoutButton hotel={hotelSlug} />
       </nav>
-      <h1 className="text-2xl font-bold mb-4">Book a Cab – {hotel}</h1>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div>
-          <label className="block mb-1 font-semibold">Trip Type</label>
-          <select
-            name="trip_type"
-            value={form.trip_type}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          >
-            <option value="oneway">One Way</option>
-            <option value="round">Round Trip</option>
-          </select>
+
+      <div className="w-96 my-20 px-5">
+        <Image
+          src={hotelData.logo_url}
+          alt={hotelData.name}
+          width={500}
+          height={500}
+        />
+      </div>
+
+      {/* booking card */}
+      <div className="px-5 w-full max-w-md">
+        <Card className="px-5 w-full" style={{ backgroundColor: secondary }}>
+          <div className="flex rounded-lg overflow-hidden">
+            <button
+              type="button"
+              className={`flex-1 py-2 font-semibold ${
+                form.trip_type === "oneway" ? "text-white" : "text-gray-700"
+              }`}
+              style={{
+                backgroundColor:
+                  form.trip_type === "oneway" ? primary : "#f5f5f5",
+              }}
+              onClick={() => setForm((f) => ({ ...f, trip_type: "oneway" }))}
+            >
+              One Way
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-2 font-semibold ${
+                form.trip_type === "round" ? "text-white" : "text-gray-700"
+              }`}
+              style={{
+                backgroundColor:
+                  form.trip_type === "round" ? primary : "#f5f5f5",
+              }}
+              onClick={() => setForm((f) => ({ ...f, trip_type: "round" }))}
+            >
+              Round Trip
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              name="from_location"
+              placeholder="From"
+              onChange={handleChange}
+              value={form.from_location}
+            />
+            <Input
+              name="to_location"
+              placeholder="To"
+              onChange={handleChange}
+              value={form.to_location}
+            />
+            <Input
+              name="vehicle_type"
+              placeholder="Vehicle Type"
+              onChange={handleChange}
+              value={form.vehicle_type}
+            />
+            <Input
+              name="travel_datetime"
+              type="datetime-local"
+              onChange={handleChange}
+              value={form.travel_datetime}
+            />
+            <button
+              type="submit"
+              className="w-full py-3 font-semibold rounded-lg shadow text-white"
+              style={{ backgroundColor: primary }}
+            >
+              Book Now
+            </button>
+          </form>
+        </Card>
+      </div>
+
+      <div className="w-full relative mt-auto">
+        {/* optional car image */}
+        <div className="absolute left-0 right-0 z-20">
+          <img
+            src="/assets/images/cab.png"
+            alt="Car"
+            className="w-[80%] md:w-[60%] lg:max-w-2xl mx-auto"
+          />
         </div>
 
-        <input
-          name="from_location"
-          placeholder="From Location"
-          onChange={handleChange}
-          value={form.from_location}
-          className="border p-2 w-full"
-        />
-
-        <input
-          name="to_location"
-          placeholder="To Location"
-          onChange={handleChange}
-          value={form.to_location}
-          className="border p-2 w-full"
-        />
-
-        <input
-          name="vehicle_type"
-          placeholder="Vehicle Type (Sedan, SUV, etc.)"
-          onChange={handleChange}
-          value={form.vehicle_type}
-          className="border p-2 w-full"
-        />
-
-        {/* ✅ combined date + time */}
-        <input
-          name="travel_datetime"
-          type="datetime-local"
-          onChange={handleChange}
-          value={form.travel_datetime}
-          className="border p-2 w-full"
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+        <div
+          className="w-full mt-20 absolute z-10"
+          style={{ backgroundColor: secondary }}
         >
-          Book Cab
-        </button>
-      </form>
+          <svg
+            className="w-full h-auto"
+            viewBox="0 0 1511 304"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+          >
+            <path d="M1515 0.5L0.5 140.5V309H1515V0.5Z" fill={primary} />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

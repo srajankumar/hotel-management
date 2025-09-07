@@ -40,3 +40,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+#triangle-bottomright {
+  border-bottom: 100px solid red;
+  border-left: 100px solid transparent;
+}

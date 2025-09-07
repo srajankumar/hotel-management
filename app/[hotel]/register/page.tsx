@@ -1,6 +1,9 @@
 // app/[hotel]/register/page.tsx
 "use client";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
@@ -97,7 +100,7 @@ export default function CustomerRegisterPage(props: {
         height: "100dvh",
       }}
     >
-      <div className="max-w-3xl mx-auto p-5 text-black">
+      <div className="max-w-3xl mx-auto p-5 text-black pb-20">
         <div className="flex flex-col items-center">
           <div className="w-96 my-16">
             <Image
@@ -107,51 +110,101 @@ export default function CustomerRegisterPage(props: {
               height={500}
             />
           </div>
-          <form onSubmit={handleSubmit} className="space-y-3 grid w-full">
-            <Input name="name" placeholder="Name" onChange={handleChange} />
-            <Input name="email" placeholder="Email" onChange={handleChange} />
-            <Input name="phone" placeholder="Phone" onChange={handleChange} />
-            <Input name="dob" type="date" onChange={handleChange} />
-            <Input
-              name="aadhar_number"
-              placeholder="Aadhar Number"
-              onChange={handleChange}
-            />
-            <Input
-              name="number_of_people"
-              type="number"
-              placeholder="Number of People"
-              onChange={handleChange}
-            />
-            <Input
-              name="people_names"
-              placeholder="People Names (comma separated)"
-              onChange={handleChange}
-            />
-
+          <form onSubmit={handleSubmit} className="space-y-4 grid w-full">
             <div>
-              <label className="font-semibold">Select Services:</label>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                required
+                id="name"
+                name="name"
+                placeholder="Enter your full name"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                required
+                id="email"
+                name="email"
+                placeholder="Enter your email address"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                required
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="dob">Date of Birth</Label>
+              <Input
+                required
+                id="dob"
+                name="dob"
+                type="date"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="aadhar_number">Aadhar Number</Label>
+              <Input
+                required
+                id="aadhar_number"
+                name="aadhar_number"
+                placeholder="Enter your Aadhar number"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="number_of_people">Number of People</Label>
+              <Input
+                required
+                id="number_of_people"
+                name="number_of_people"
+                type="number"
+                placeholder="Total number of guests"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="people_names">
+                People Names (comma separated)
+              </Label>
+              <Input
+                id="people_names"
+                name="people_names"
+                placeholder="Guest names (comma separated)"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label className="font-semibold">Select Services:</Label>
               <div className="flex gap-2 mt-1">
                 {["room", "cab", "food"].map((s) => (
-                  <label key={s} className="flex items-center space-x-1">
-                    <Input
-                      type="checkbox"
+                  <div key={s} className="flex items-center gap-3">
+                    <Checkbox
+                      id={`service_${s}`}
                       checked={form.selected_services.includes(s)}
-                      onChange={() => handleServiceToggle(s)}
+                      onCheckedChange={() => handleServiceToggle(s)}
                     />
-                    <span>{s}</span>
-                  </label>
+                    <Label htmlFor={`service_${s}`}>{s}</Label>
+                  </div>
                 ))}
               </div>
             </div>
-
-            <button
+            <Button
               type="submit"
               className="px-4 py-2 rounded text-white"
               style={{ backgroundColor: hotelData.color_primary }}
             >
               Register
-            </button>
+            </Button>
           </form>
         </div>
       </div>

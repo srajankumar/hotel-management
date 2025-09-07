@@ -4,10 +4,14 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import LogoutButton from "@/components/customer/logout-button";
+import Image from "next/image";
+import { Car, House, Utensils } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface Hotel {
   id: string;
   name: string;
+  logo_url: string;
   color_primary: string;
   color_secondary: string;
   services: string[];
@@ -70,105 +74,123 @@ export default function CustomerDashboard({
     return <div className="max-w-2xl mx-auto mt-8">Loading...</div>;
   }
 
-  const { name, color_primary, color_secondary, services } = hotelInfo;
+  // const { name, color_primary, color_secondary, services } = hotelInfo;
 
   return (
     <div
       style={{
-        background: color_secondary,
-        color: color_primary,
+        backgroundColor: hotelInfo.color_secondary,
         height: "100dvh",
       }}
     >
-      <div className="max-w-2xl mx-auto px-5 py-10">
-        <h1 className="text-2xl font-semibold mb-5">{name}</h1>
-        {customerId ? (
-          <p>
-            Hello, <span className="font-bold">{customerName}</span>
-          </p>
-        ) : (
-          <p className="text-red-600">Please register as a customer first.</p>
-        )}
+      <div className="max-w-3xl mx-auto p-5 text-black pb-20">
+        <div className="flex flex-col items-center">
+          <div className="w-96 my-16">
+            <Image
+              src={hotelInfo.logo_url}
+              alt={hotelInfo.name}
+              width={500}
+              height={500}
+            />
+          </div>
+          <div className="w-full">
+            <h1 className="text-2xl font-semibold mb-5">{hotelInfo.name}</h1>
+            {customerId ? (
+              <p>
+                Hello, <span className="font-bold">{customerName}</span>
+              </p>
+            ) : (
+              <p className="text-red-600">
+                Please register as a customer first.
+              </p>
+            )}
 
-        {customerId ? (
-          <nav className="my-5 flex flex-wrap gap-3">
-            {/* dynamically render service buttons */}
-            {services.includes("cab") && (
-              <Link href={`/${hotel}/cab-booking`}>
-                <Button
-                  style={{
-                    backgroundColor: color_primary,
-                    color: color_secondary,
-                  }}
-                >
-                  Book a Cab
-                </Button>
-              </Link>
-            )}
-            {services.includes("room") && (
-              <Link href={`/${hotel}/room-booking`}>
-                <Button
-                  style={{
-                    backgroundColor: color_primary,
-                    color: color_secondary,
-                  }}
-                >
-                  Book a Room
-                </Button>
-              </Link>
-            )}
-            {services.includes("food") && (
-              <Link href={`/${hotel}/food-ordering`}>
-                <Button
-                  style={{
-                    backgroundColor: color_primary,
-                    color: color_secondary,
-                  }}
-                >
-                  Order Food
-                </Button>
-              </Link>
-            )}
-            <LogoutButton hotel={hotel} />
-          </nav>
-        ) : (
-          <nav className="my-5 flex flex-wrap gap-3">
-            <Link href={`/${hotel}/register`}>
-              <Button
-                style={{
-                  backgroundColor: color_primary,
-                  color: color_secondary,
-                }}
-              >
-                Register Here
-              </Button>
-            </Link>
-          </nav>
-        )}
+            {customerId ? (
+              <nav className="my-5 flex flex-wrap gap-3">
+                {/* dynamically render service buttons */}
+                {hotelInfo.services.includes("rooms") && (
+                  <Link href={`/${hotel}/room-booking`}>
+                    <div className="w-40 h-40 border-dashed border-2 transition-all duration-300 hover:bg-secondary/50 rounded-md flex justify-center items-center flex-col">
+                      <House
+                        style={{
+                          color: hotelInfo.color_primary,
+                        }}
+                        className="w-16 h-16 opacity-50"
+                      />
+                      <Label>Book a Room</Label>
+                    </div>
+                  </Link>
+                )}
 
-        <div className="py-5 grid gap-3">
-          <h2 className="text-lg font-semibold">My Cab Bookings</h2>
-          {bookings.length === 0 ? (
-            <p>No bookings yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {bookings.map((b) => (
-                <li
-                  key={b.id}
-                  className="border p-3 rounded bg-white text-black"
-                >
-                  <p className="font-semibold">
-                    {b.trip_type.toUpperCase()} Trip
-                  </p>
-                  <p>
-                    {b.from_location} → {b.to_location}
-                  </p>
-                  <p>Vehicle: {b.vehicle_type}</p>
-                  <p>Date: {b.travel_datetime}</p>
-                </li>
-              ))}
-            </ul>
-          )}
+                {hotelInfo.services.includes("cabs") && (
+                  <Link href={`/${hotel}/cab-booking`}>
+                    <div className="w-40 h-40 border-dashed border-2 transition-all duration-300 hover:bg-secondary/50 rounded-md flex justify-center items-center flex-col">
+                      <Car
+                        style={{
+                          color: hotelInfo.color_primary,
+                        }}
+                        className="w-16 h-16 opacity-50"
+                      />
+                      <Label>Book a Cab</Label>
+                    </div>
+                  </Link>
+                )}
+
+                {hotelInfo.services.includes("food") && (
+                  <Link href={`/${hotel}/food-ordering`}>
+                    <div className="w-40 h-40 border-dashed border-2 transition-all duration-300 hover:bg-secondary/50 rounded-md flex justify-center items-center flex-col">
+                      <Utensils
+                        style={{
+                          color: hotelInfo.color_primary,
+                        }}
+                        className="w-16 h-16 opacity-50"
+                      />
+                      <Label>Order Food</Label>
+                    </div>
+                  </Link>
+                )}
+                <LogoutButton hotel={hotel} />
+              </nav>
+            ) : (
+              <nav className="my-5 flex flex-wrap gap-3">
+                <Link href={`/${hotel}/register`}>
+                  <Button
+                    style={{
+                      backgroundColor: hotelInfo.color_primary,
+                      color: hotelInfo.color_secondary,
+                    }}
+                  >
+                    Register Here
+                  </Button>
+                </Link>
+              </nav>
+            )}
+
+            <div className="py-5 grid gap-3">
+              <h2 className="text-lg font-semibold">My Cab Bookings</h2>
+              {bookings.length === 0 ? (
+                <p>No bookings yet.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {bookings.map((b) => (
+                    <li
+                      key={b.id}
+                      className="border p-3 rounded bg-white text-black"
+                    >
+                      <p className="font-semibold">
+                        {b.trip_type.toUpperCase()} Trip
+                      </p>
+                      <p>
+                        {b.from_location} → {b.to_location}
+                      </p>
+                      <p>Vehicle: {b.vehicle_type}</p>
+                      <p>Date: {b.travel_datetime}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

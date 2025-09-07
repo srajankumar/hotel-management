@@ -81,7 +81,7 @@ export default function CabBookingPage({
 
   return (
     <div
-      className="min-h-dvh flex flex-col items-center"
+      className="flex flex-col items-center"
       style={{ backgroundColor: secondary }}
     >
       <nav className="w-full p-5 flex justify-between absolute top-0">
@@ -91,7 +91,7 @@ export default function CabBookingPage({
         <LogoutButton hotel={hotelSlug} />
       </nav>
 
-      <div className="w-96 my-20 px-5">
+      <div className="w-96 my-20 md:px-0 px-10">
         <Image
           src={hotelData.logo_url}
           alt={hotelData.name}
@@ -168,7 +168,7 @@ export default function CabBookingPage({
         </Card>
       </div>
 
-      <div className="w-full relative mt-auto">
+      <div className="w-full relative">
         {/* optional car image */}
         <div className="absolute left-0 right-0 z-20">
           <img

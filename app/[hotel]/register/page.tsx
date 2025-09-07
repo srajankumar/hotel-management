@@ -5,12 +5,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import React from "react";
 import { useState, useEffect } from "react";
 
 export default function CustomerRegisterPage(props: {
   params: { hotel: string };
 }) {
-  const { hotel } = require("react").use(props.params);
+  const hotel = props.params.hotel;
   const [hotelData, setHotelData] = useState<{
     name: string;
     color_primary: string;
@@ -95,14 +96,12 @@ export default function CustomerRegisterPage(props: {
 
   return (
     <div
-      style={{
-        backgroundColor: hotelData.color_secondary,
-        height: "100dvh",
-      }}
+      className="flex flex-col items-center"
+      style={{ backgroundColor: hotelData.color_secondary }}
     >
       <div className="max-w-3xl mx-auto p-5 text-black pb-20">
         <div className="flex flex-col items-center">
-          <div className="w-96 my-16">
+          <div className="w-96 my-20 md:px-0 px-10">
             <Image
               src={hotelData.logo_url}
               alt={hotelData.name}

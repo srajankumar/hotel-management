@@ -26,7 +26,11 @@ export async function PATCH(req: Request) {
   const body = await req.json();
   const { request_id, status, reason } = body;
 
-  const updateData: any = { status };
+  type UpdateData = {
+    status: string;
+    reason?: string;
+  };
+  const updateData: UpdateData = { status };
   if (reason) updateData.reason = reason;
 
   const { data, error } = await supabase

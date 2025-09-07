@@ -1,7 +1,7 @@
 // app/api/developer/create-admin/route.ts
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
-import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
 
 type ReqBody = {
   email: string;

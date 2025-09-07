@@ -52,11 +52,11 @@ export async function POST(req: Request) {
     }
 
     // get admin email from profiles
-    const { data: profile } = await supabaseServer
-      .from("profiles")
-      .select("email, full_name")
-      .eq("id", adminId)
-      .single();
+    // const { data: profile } = await supabaseServer
+    //   .from("profiles")
+    //   .select("email, full_name")
+    //   .eq("id", adminId)
+    //   .single();
     // const to = profile?.email;
 
     // if (to) {
@@ -83,11 +83,11 @@ export async function POST(req: Request) {
       })
       .eq("id", id);
 
-    const { data: profile } = await supabaseServer
-      .from("profiles")
-      .select("email, full_name")
-      .eq("id", adminId)
-      .single();
+    // const { data: profile } = await supabaseServer
+    //   .from("profiles")
+    //   .select("email, full_name")
+    //   .eq("id", adminId)
+    //   .single();
     // const to = profile?.email;
     // if (to) {
     //   await sendMail({

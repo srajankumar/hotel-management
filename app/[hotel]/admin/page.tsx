@@ -3,10 +3,20 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useParams } from "next/navigation";
 
+type Hotel = {
+  id: string;
+  name: string;
+  slug: string;
+  color_primary: string;
+  color_secondary: string;
+  logo_url: string;
+  is_active: boolean;
+};
+
 export default function HotelAdminPage() {
   const params = useParams() as { hotel?: string };
   const slug = params.hotel;
-  const [hotel, setHotel] = useState<any>(null);
+  const [hotel, setHotel] = useState<Hotel | null>(null);
 
   useEffect(() => {
     if (slug) fetchHotel();

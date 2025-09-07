@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import LogoutButton from "@/components/customer/logout-button";
@@ -17,19 +17,28 @@ interface Hotel {
   services: string[];
 }
 
+type Booking = {
+  id: string;
+  trip_type: string;
+  from_location: string;
+  to_location: string;
+  vehicle_type: string;
+  travel_datetime: string;
+};
+
 export default function CustomerDashboard({
   params,
 }: {
   params: Promise<{ hotel: string }>;
 }) {
-  const { hotel } = require("react").use(params); // unwrap params in client component
+  const { hotel } = React.use(params); // unwrap params in client component
 
   const [hotelInfo, setHotelInfo] = useState<Hotel | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState<string | null>(null);
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     // 1. fetch hotel info from API

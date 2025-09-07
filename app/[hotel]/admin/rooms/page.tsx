@@ -3,10 +3,18 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useParams, useRouter } from "next/navigation";
 
+type Room = {
+  id: string;
+  name: string;
+  price_per_night: number;
+  hotel_id: string;
+  // Add other fields as needed
+};
+
 export default function RoomsList() {
   const params = useParams() as { hotel?: string };
   const slug = params.hotel;
-  const [rooms, setRooms] = useState<any[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const router = useRouter();
 
   useEffect(() => {
